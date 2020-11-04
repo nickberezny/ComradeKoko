@@ -1,0 +1,15 @@
+{
+    "name": "NPCs",
+    "references": [
+        "GUID:130ff03511fd67a41a5242fe1cba5a9b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

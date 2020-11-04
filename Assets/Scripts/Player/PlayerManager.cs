@@ -14,6 +14,7 @@ public class PlayerManager : Singleton<PlayerManager>
     public enum PlayerType
     {
         NULL,
+        GROUNDED,
         CLIMB,
         BALLOON,
         HOTAIR,
@@ -22,14 +23,29 @@ public class PlayerManager : Singleton<PlayerManager>
         ROCKET
     }
 
-    PlayerState _currentPlayerState = PlayerState.CONTROLLABLE;
-    PlayerType _currentPlayerType = PlayerType.PLANE;
+    PlayerState _currentPlayerState = PlayerState.UNACTIVE;
+    PlayerType _currentPlayerType = PlayerType.CLIMB;
 
-    [SerializeField] PlayerMotor _playerMotor;
+    
+
+    [SerializeField] GameObject _playerPrefab;
+    [SerializeField] GameObject _balloonPrefab;
+
+    [SerializeField] private float birdLift = 1;
+    [SerializeField] private float birdDrag = 2;
+    [SerializeField] private float balloonLift = 15;
+    [SerializeField] private float balloonDrag = 1;
+    [SerializeField] private float gravity = -3;
+    [SerializeField] private float planeDrag = 0f;
+
+    private GameObject _currentPlayer;
+    private PlayerMotor _playerMotor;
+    private PhysicsParameters param;
 
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
+        
     }
 
     private void Update()
@@ -55,23 +71,23 @@ public class PlayerManager : Singleton<PlayerManager>
             switch(_currentPlayerType)
             {
                 case PlayerType.CLIMB:
-                    SlowDown(Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S));
+                    if (Input.GetKey(KeyCode.Space)) ApplyForce();
                     break;
                 case PlayerType.BALLOON:
-                    SlowDown(Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S));
+                    if (Input.GetKey(KeyCode.Space)) ApplyForce();
                     break;
                 case PlayerType.HOTAIR:
-                    SlowDown(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S));
-                    SpeedUp(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W));
+                    if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) ApplyForce();
+                    if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) ApplyForce();
                     break;
                 case PlayerType.PLANE:
-                    SpeedUp(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W));
+                    if (Input.GetKey(KeyCode.Space)) ApplyForce();
                     break;
                 case PlayerType.JETPACK:
-                    SpeedUp(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W));
+                    if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) ApplyForce();
                     break;
                 case PlayerType.ROCKET:
-                    SpeedUp(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W));
+                    if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) ApplyForce();
                     break;
                 default:
                     break;
@@ -82,18 +98,82 @@ public class PlayerManager : Singleton<PlayerManager>
 
     }
 
-    private void SlowDown(bool keyPress)
+    public GameObject CreatePlayer(Transform spawnPoint)
     {
-        if (keyPress) _playerMotor.force = -8;
-        //else _playerMotor.force = 0;
+        if(_currentPlayerType == PlayerType.BALLOON) _currentPlayer = Instantiate(_balloonPrefab, spawnPoint);
+        else _currentPlayer = Instantiate(_playerPrefab, spawnPoint);
+        _playerMotor = _currentPlayer.GetComponent<PlayerMotor>();
+
+        _currentPlayerState = PlayerState.CONTROLLABLE;
+        UpdateType(PlayerType.CLIMB);
+
+        return _currentPlayer;
+    }
+
+    void UpdateType(PlayerType type)
+    {
+        _currentPlayerType = type;
+
+        if(type == PlayerType.GROUNDED)
+        {
+            _playerMotor.UpdateGrounded(true);
+        }
+        else
+        {
+            _playerMotor.UpdateGrounded(false);
+        }
+
+        switch (type)
+        {
+            case PlayerType.CLIMB:
+                param = new PhysicsParameters();
+                param.drag = birdDrag;
+                param.lift = birdLift;
+                param.mass = 1;
+                param.horizontal = 5;
+                param.vertical = -2.5f;
+                break;
+
+            case PlayerType.BALLOON:
+                param = new PhysicsParameters();
+                param.balloon = true;
+                param.drag = balloonDrag;
+                param.lift = balloonLift;
+                param.mass = 1;
+                param.horizontal = 5;
+                param.vertical = -8;
+                param.ballon_mass = 0.02f;
+                param.balloon_damp = 1f;
+                param.radius = 3;
+                break;
+
+            case PlayerType.HOTAIR:
+
+                break;
+            case PlayerType.PLANE:
+                param.lift = gravity;
+                param.drag = planeDrag;
+                break;
+            case PlayerType.JETPACK:
+
+                break;
+            case PlayerType.ROCKET:
+
+                break;
+            default:
+                break;
+        }
+
+        _playerMotor.param = param;
+    }
+
+    
+
+    private void ApplyForce()
+    {
+        _playerMotor.vertical = 1;
         return;
     }
 
-    private void SpeedUp(bool keyPress)
-    {
-        if(keyPress) Debug.Log("Speed Up");
-        if (keyPress) _playerMotor.force = 200;
-        //else _playerMotor.force = 0;
-        return;
-    }
+
 }
