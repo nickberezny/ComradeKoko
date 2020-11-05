@@ -8,36 +8,49 @@ public class PlayerMotor : MonoBehaviour
     [SerializeField] GameObject _balloonObject;
 
     public PhysicsParameters param;
+    private PlayerHealth _playerHealth;
 
     public float horizontal = 0;
     public float vertical = 0;
 
     private float _velocity = 0;
+    private float _horizontal_velocity = 0;
     private float dt = 0;
-    private bool _grounded = true;
+    private bool hit = false;
 
     private float _theta = 0;
     private float _dtheta = 0;
 
+    private void Awake()
+    {
+        _playerHealth = GetComponent<PlayerHealth>();
+    }
+
     private void FixedUpdate()
     {
         dt = Time.deltaTime;
+
+        if (vertical != 0) _playerHealth.changeHealth(-1);
 
         if (param.balloon)
         {
             BalloonPhysics();
             return;
         }
-
-        if (!_grounded)
-        {
-            _velocity = _velocity + ((vertical * param.vertical + param.lift - param.drag * _velocity) / param.mass) * dt;
-            vertical = 0;
-            _playerObject.transform.position = _playerObject.transform.position + new Vector3(horizontal * param.horizontal * dt, _velocity * dt, 0);
-        }
         else
         {
-            _playerObject.transform.position = _playerObject.transform.position + new Vector3(horizontal * dt, 0, 0);
+            if (vertical != 0) Debug.Log(vertical);
+            _velocity += ((vertical * param.vertical + param.lift - param.drag * _velocity) / param.mass) * dt;
+            vertical = 0;
+            _horizontal_velocity += ((horizontal * param.horizontal - param.drag * _horizontal_velocity) / param.mass) * dt;
+            _playerObject.transform.position = _playerObject.transform.position + new Vector3(_horizontal_velocity * dt, _velocity * dt, 0);
+        }
+
+        if(hit)
+        {
+            hit = false;
+            PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.CONTROLLABLE);
+            
         }
 
     }
@@ -64,8 +77,10 @@ public class PlayerMotor : MonoBehaviour
 
     }
 
-    public void UpdateGrounded(bool val)
+    public void HitPlayer(float forceX, float forceY)
     {
-        _grounded = val;
+        hit = true;
+        horizontal = forceX;
+        vertical = forceY;
     }
 }

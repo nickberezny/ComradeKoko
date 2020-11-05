@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class PlayerManager : Singleton<PlayerManager>
 {
@@ -8,6 +9,7 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         UNACTIVE,
         CONTROLLABLE,
+        HIT,
         DEAD,
     }
 
@@ -40,6 +42,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     private GameObject _currentPlayer;
     private PlayerMotor _playerMotor;
+    private PlayerHealth _playerHealth;
     private PhysicsParameters param;
 
     private void Start()
@@ -98,11 +101,17 @@ public class PlayerManager : Singleton<PlayerManager>
 
     }
 
+    public void ChangeState(PlayerState state)
+    {
+        _currentPlayerState = state;
+    }
+
     public GameObject CreatePlayer(Transform spawnPoint)
     {
         if(_currentPlayerType == PlayerType.BALLOON) _currentPlayer = Instantiate(_balloonPrefab, spawnPoint);
         else _currentPlayer = Instantiate(_playerPrefab, spawnPoint);
         _playerMotor = _currentPlayer.GetComponent<PlayerMotor>();
+        _playerHealth = _currentPlayer.GetComponent<PlayerHealth>();
 
         _currentPlayerState = PlayerState.CONTROLLABLE;
         UpdateType(PlayerType.CLIMB);
@@ -114,6 +123,7 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         _currentPlayerType = type;
 
+        /*
         if(type == PlayerType.GROUNDED)
         {
             _playerMotor.UpdateGrounded(true);
@@ -122,6 +132,7 @@ public class PlayerManager : Singleton<PlayerManager>
         {
             _playerMotor.UpdateGrounded(false);
         }
+        */
 
         switch (type)
         {
@@ -130,7 +141,7 @@ public class PlayerManager : Singleton<PlayerManager>
                 param.drag = birdDrag;
                 param.lift = birdLift;
                 param.mass = 1;
-                param.horizontal = 5;
+                param.horizontal = 3;
                 param.vertical = -2.5f;
                 break;
 
@@ -172,6 +183,7 @@ public class PlayerManager : Singleton<PlayerManager>
     private void ApplyForce()
     {
         _playerMotor.vertical = 1;
+        //_playerHealth.ChangeHealth(-1);
         return;
     }
 
