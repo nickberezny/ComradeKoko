@@ -2,7 +2,8 @@
     "name": "Player",
     "references": [
         "GUID:5041d5f1ee5334c4aba82934259246a8",
-        "GUID:339417b2506cff1449332e786d10cadd"
+        "GUID:339417b2506cff1449332e786d10cadd",
+        "GUID:ac245e445494ecf4c84b995132bad096"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

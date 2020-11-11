@@ -12,10 +12,18 @@ public class GameManager : Singleton<GameManager>
         PAUSED
     }
 
+    public bool _storyMode = false;
+
+    private int _currentLevelNum = 0;
+    private bool _paused = false;
+    
+
     GameState _currentGameState = GameState.PREGAME;
 
     [SerializeField] private CameraManager _cameraManager;
     [SerializeField] private PlayerManager _playerManager;
+    [SerializeField] private Canvas HUD;
+    [SerializeField] private UIManager _uiManager;
 
     private GameObject _player;
     private string _currentLevelName;
@@ -31,16 +39,45 @@ public class GameManager : Singleton<GameManager>
     {
         _currentLevelName = SceneManager.GetActiveScene().name;
         DontDestroyOnLoad(gameObject);
-        //_cameraManager.setPlayer(_player);
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape) && PlayerManager.Instance._currentPlayerState == PlayerManager.PlayerState.CONTROLLABLE)
+        {
+           
+            if (_paused)
+            {
+                Time.timeScale = 1;
+            }
+            else
+            {
+                Time.timeScale = 0;
+            }
+
+            _paused = !_paused;
+            _uiManager.togglePause();
+        }
     }
 
     void OnLoadLevelComplete(AsyncOperation ao)
     {
+        HUD.enabled = true;
         AsyncUnloadLevel(_sceneToUnload);
+        
+
+
+    }
+
+    void OnUnloadOperationComplete (AsyncOperation ao)
+    {
         Transform spawnPoint = GameObject.FindGameObjectWithTag("Spawn").transform;
-        if(spawnPoint)
+
+        PlayerType.type type = FindObjectOfType<LevelManager>()._playerType;
+
+        if (spawnPoint)
         {
-            _player = _playerManager.CreatePlayer(spawnPoint);
+            _player = _playerManager.CreatePlayer(spawnPoint.parent, type);
             spawnPoint.position = spawnPoint.position + new Vector3(0, 0, -10);
             _cameraManager.CreateCamera(spawnPoint);
             _cameraManager.setPlayer(_player);
@@ -50,20 +87,36 @@ public class GameManager : Singleton<GameManager>
             Debug.LogError("[GameManager] Cannot find spawn point");
             return;
         }
-
-
     }
 
-    public void LoadLevel(string levelName)
+    public void LoadNextLevel()
     {
-        AsyncLoadLevel(levelName);
-        
-        
+         AsyncLoadLevel(_currentLevelNum+1);
+        _currentLevelNum += 1;
     }
 
-    private void AsyncLoadLevel(string levelName)
+    public void LoadLevel(int levelNum = -1, string levelName = "")
     {
-        AsyncOperation ao = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Additive);
+        if (!string.IsNullOrEmpty(levelName)) AsyncLoadLevel(-1,levelName);
+        else if(levelNum != -1) AsyncLoadLevel(levelNum, "");   
+    }
+    
+    private void AsyncLoadLevel(int levelNum = -1, string levelName = "")
+    {
+        PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.UNACTIVE);
+        AsyncOperation ao;
+        if (!string.IsNullOrEmpty(levelName)) ao = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Additive);
+        else if (levelNum != -1)
+        {
+            ao = SceneManager.LoadSceneAsync(levelNum, LoadSceneMode.Additive);
+            levelName = SceneManager.GetSceneByBuildIndex(levelNum).name;
+        }
+        else
+        {
+            Debug.Log("[GameManager] Failed to load level - incorrect number or name " + levelNum + ", " + levelName);
+            return;
+        }
+
         if (ao == null)
         {
             Debug.LogError("[GameManager] Unable to load level " + levelName);
@@ -85,7 +138,7 @@ public class GameManager : Singleton<GameManager>
             Debug.LogError("[GameManager] Unable to unload level " + levelName);
             return;
         }
-        //ao.completed += OnUnloadOperationComplete;
+        ao.completed += OnUnloadOperationComplete;
     }
 
 

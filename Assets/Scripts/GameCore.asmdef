@@ -2,7 +2,8 @@
     "name": "GameCore",
     "references": [
         "GUID:5041d5f1ee5334c4aba82934259246a8",
-        "GUID:130ff03511fd67a41a5242fe1cba5a9b"
+        "GUID:130ff03511fd67a41a5242fe1cba5a9b",
+        "GUID:339417b2506cff1449332e786d10cadd"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -21,7 +21,7 @@ public class Enemy : MonoBehaviour
         {
             _collider.enabled = false;
             StartCoroutine(WaitToReactivateCollider(1));
-            collision.gameObject.GetComponent<PlayerHealth>().HitByEnemy(collision, healthDecrement);
+            collision.gameObject.GetComponent<PlayerHealth>().HitByEnemy(collision, -healthDecrement);
             
             //collision.gameObject.GetComponent<Player>().fallDown();
             //set animation

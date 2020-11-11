@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerMotor : MonoBehaviour
 {
@@ -9,9 +10,12 @@ public class PlayerMotor : MonoBehaviour
 
     public PhysicsParameters param;
     private PlayerHealth _playerHealth;
+    private Vector3 _playerPositions;
 
     public float horizontal = 0;
     public float vertical = 0;
+
+    public float wind = 0;
 
     private float _velocity = 0;
     private float _horizontal_velocity = 0;
@@ -24,16 +28,18 @@ public class PlayerMotor : MonoBehaviour
     private void Awake()
     {
         _playerHealth = GetComponent<PlayerHealth>();
+        _playerPositions = transform.position;
     }
 
     private void FixedUpdate()
     {
         dt = Time.deltaTime;
-
+        
         if (vertical != 0) _playerHealth.changeHealth(-1);
 
         if (param.balloon)
         {
+            Debug.Log("Balloon");
             BalloonPhysics();
             return;
         }
@@ -42,25 +48,27 @@ public class PlayerMotor : MonoBehaviour
             if (vertical != 0) Debug.Log(vertical);
             _velocity += ((vertical * param.vertical + param.lift - param.drag * _velocity) / param.mass) * dt;
             vertical = 0;
-            _horizontal_velocity += ((horizontal * param.horizontal - param.drag * _horizontal_velocity) / param.mass) * dt;
-            _playerObject.transform.position = _playerObject.transform.position + new Vector3(_horizontal_velocity * dt, _velocity * dt, 0);
+            _horizontal_velocity += (((horizontal * param.horizontal) + wind - param.drag * _horizontal_velocity) / param.mass) * dt;
+            _playerPositions = _playerPositions + new Vector3(_horizontal_velocity * dt, _velocity * dt, 0);
         }
 
-        if(hit)
+        if (hit)
         {
             hit = false;
             PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.CONTROLLABLE);
-            
+
         }
+
+        _playerObject.transform.position = RoundPosition(_playerPositions);
 
     }
 
     private void BalloonPhysics()
     {
-        _theta = Mathf.Asin((_playerObject.transform.position.x - _balloonObject.transform.position.x) / param.radius);
+        _theta = Mathf.Asin((_playerPositions.x - _balloonObject.transform.position.x) / param.radius);
 
         float torque = (horizontal * param.horizontal * Mathf.Cos(_theta) - param.mass * 5 * Mathf.Sin(_theta)) / param.mass;
-        float axialForce = horizontal * param.horizontal * Mathf.Abs(Mathf.Sin(_theta));
+        float axialForce = (horizontal * param.horizontal + wind) * Mathf.Abs(Mathf.Sin(_theta));
 
         _dtheta += ((torque - param.balloon_damp * _dtheta) / param.balloon_damp) * dt;
 
@@ -73,7 +81,7 @@ public class PlayerMotor : MonoBehaviour
         vertical = 0;
 
         _balloonObject.transform.position = _balloonObject.transform.position + new Vector3(newX, _velocity * dt, 0);
-        _playerObject.transform.position = _balloonObject.transform.position + new Vector3(param.radius * Mathf.Sin(_theta), -param.radius * Mathf.Cos(_theta), 0);
+        _playerPositions = _balloonObject.transform.position + new Vector3(param.radius * Mathf.Sin(_theta), -param.radius * Mathf.Cos(_theta), 0);
 
     }
 
@@ -82,5 +90,30 @@ public class PlayerMotor : MonoBehaviour
         hit = true;
         horizontal = forceX;
         vertical = forceY;
+    }
+
+    public void Death()
+    {
+        vertical = 0;
+        horizontal = 0;
+        _horizontal_velocity = 0;
+        param = new PhysicsParameters();
+        param.lift = -10;
+        param.balloon = false;
+        param.mass = 1;
+    }
+
+    private float RoundToNearestPixel(float unityUnits)
+    {
+        float valueInPixels = Mathf.Round(unityUnits * 64);
+        return valueInPixels * (1 / 64f);
+    }
+
+    private Vector3 RoundPosition(Vector3 pos)
+    {
+        pos.x = RoundToNearestPixel(pos.x);
+        pos.y = RoundToNearestPixel(pos.y);
+
+        return pos;
     }
 }
