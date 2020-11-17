@@ -7,6 +7,7 @@ TagManager:
   - Spawn
   - web
   - LevelManager
+  - tilemap
   layers:
   - Default
   - TransparentFX
@@ -17,8 +18,8 @@ TagManager:
   - 
   - 
   - Wind
-  - 
-  - 
+  - Player
+  - PostProcessing
   - 
   - 
   - 

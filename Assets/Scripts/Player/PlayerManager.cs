@@ -18,24 +18,27 @@ public class PlayerManager : Singleton<PlayerManager>
     public PlayerType.type _currentPlayerType = PlayerType.type.NULL;
 
     [SerializeField] GameObject _playerPrefab;
-    [SerializeField] GameObject _balloonPrefab;
+    
 
-    [SerializeField] private float birdLift = 1;
-    [SerializeField] private float birdDrag = 2;
     [SerializeField] private float balloonLift = 15;
     [SerializeField] private float balloonDrag = 1;
+    [SerializeField] private float balloonDamp = 1;
+    [SerializeField] private float mass = 1;
     [SerializeField] private float gravity = -3;
-    [SerializeField] private float planeDrag = 0f;
     [SerializeField] private HUD _hud;
 
     private GameObject _currentPlayer;
-    private PlayerMotor _playerMotor;
+    private PlayerMotor2 _playerMotor;
     private PlayerHealth _playerHealth;
     private PhysicsParameters param;
+
+   
 
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
+
+        
         
     }
 
@@ -49,20 +52,25 @@ public class PlayerManager : Singleton<PlayerManager>
 
         if (_currentPlayerState == PlayerState.CONTROLLABLE)
         {
-
+            if(Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                _playerMotor.Death();
+            }
             if(Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
             {
-                _playerMotor.horizontal = 1;
+                _playerMotor.applyHorizontal = 1;
+                
                 //move right
             }
             else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
             {
-                _playerMotor.horizontal = -1;
+                _playerMotor.applyHorizontal = -1;
+                
                 //move left
             }
             else
             {
-                _playerMotor.horizontal = 0;
+                _playerMotor.applyHorizontal = 0;
             }
 
             switch(_currentPlayerType)
@@ -104,9 +112,9 @@ public class PlayerManager : Singleton<PlayerManager>
 
     public GameObject CreatePlayer(Transform spawnPoint, PlayerType.type type)
     {
-        if(type == PlayerType.type.BALLOON) _currentPlayer = Instantiate(_balloonPrefab, spawnPoint);
-        else _currentPlayer = Instantiate(_playerPrefab, spawnPoint);
-        _playerMotor = _currentPlayer.GetComponent<PlayerMotor>();
+        //if(type == PlayerType.type.BALLOON) _currentPlayer = Instantiate(_balloonPrefab, spawnPoint);
+        _currentPlayer = Instantiate(_playerPrefab, spawnPoint);
+        _playerMotor = _currentPlayer.GetComponent<PlayerMotor2>();
         _playerHealth = _currentPlayer.GetComponent<PlayerHealth>();
         
         Debug.Log(_currentPlayer.gameObject);
@@ -121,48 +129,28 @@ public class PlayerManager : Singleton<PlayerManager>
         _currentPlayerType = type;
         Debug.Log(type);
 
-        /*
-        if(type == PlayerType.GROUNDED)
-        {
-            _playerMotor.UpdateGrounded(true);
-        }
-        else
-        {
-            _playerMotor.UpdateGrounded(false);
-        }
-        */
-
         switch (type)
         {
             case PlayerType.type.CLIMB:
-                param = new PhysicsParameters();
-                param.drag = birdDrag;
-                param.lift = birdLift;
-                param.mass = 1;
-                param.horizontal = 3;
-                param.vertical = -2.5f;
-                Debug.Log("CLIMB!");
+
                 break;
 
             case PlayerType.type.BALLOON:
                 param = new PhysicsParameters();
-                param.balloon = true;
                 param.drag = balloonDrag;
                 param.lift = balloonLift;
-                param.mass = 1;
-                param.horizontal = 5;
-                param.vertical = -8;
-                param.ballon_mass = 0.02f;
-                param.balloon_damp = 1f;
-                param.radius = 3;
+                param.mass = mass;
+                param.horizontalVel = 2f;
+                param.verticalForce = 2f;
+                param.damp = balloonDamp;
+                param.radius = 1;
+                param.gravity = gravity;
                 break;
 
             case PlayerType.type.HOTAIR:
                 param = new PhysicsParameters();
                 break;
             case PlayerType.type.PLANE:
-                param.lift = gravity;
-                param.drag = planeDrag;
                 break;
             case PlayerType.type.JETPACK:
                 param = new PhysicsParameters();
@@ -183,7 +171,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     private void ApplyForce()
     {
-        _playerMotor.vertical = 1;
+        _playerMotor.applyVertical = 1;
         //_playerHealth.ChangeHealth(-1);
         return;
     }

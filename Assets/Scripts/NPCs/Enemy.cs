@@ -19,16 +19,12 @@ public class Enemy : MonoBehaviour
         Debug.Log("Collision w/ " + collision.gameObject.name);
         if (collision.gameObject.tag == "Player")
         {
+
             _collider.enabled = false;
             StartCoroutine(WaitToReactivateCollider(1));
             collision.gameObject.GetComponent<PlayerHealth>().HitByEnemy(collision, -healthDecrement);
-            
-            //collision.gameObject.GetComponent<Player>().fallDown();
-            //set animation
-            //Destroy(this.gameObject);
-            //audioSource.Play();
-            //StartCoroutine(fallDown());
         }
+
     }
 
     IEnumerator WaitToReactivateCollider(float t)

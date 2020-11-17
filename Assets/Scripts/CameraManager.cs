@@ -48,8 +48,8 @@ public class CameraManager : MonoBehaviour
 
     private float RoundToNearestPixel(float unityUnits)
     {
-        float valueInPixels = Mathf.Round(unityUnits * 64);
-        return valueInPixels * (1 / 64f);
+        float valueInPixels = Mathf.Round(unityUnits * 100);
+        return valueInPixels * (1 / 100f);
     }
 
     private Vector3 RoundPosition(Vector3 pos)

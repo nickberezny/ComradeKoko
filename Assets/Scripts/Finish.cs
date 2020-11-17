@@ -9,9 +9,7 @@ public class Finish : MonoBehaviour
         Debug.Log("Collision w/ " + collision.gameObject.name);
         if (collision.gameObject.tag == "Player")
         {
-            //PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.UNACTIVE);
-            //finishing animation
-            //load next level
+
             GameManager.Instance.LoadNextLevel();
         }
     }

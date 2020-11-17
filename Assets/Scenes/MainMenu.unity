@@ -15,12 +15,12 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 0
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_FogColor: {r: 0.5660378, g: 0.5660378, b: 0.5660378, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -497,11 +497,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7702355461012316239, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
       propertyPath: balloonLift
-      value: 4
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7702355461012316239, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
       propertyPath: balloonDrag
-      value: 1
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7702355461012316239, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
       propertyPath: _balloonPrefab
@@ -510,10 +510,10 @@ PrefabInstance:
     - target: {fileID: 7702355461012316239, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
       propertyPath: _playerPrefab
       value: 
-      objectReference: {fileID: 2943902452759134208, guid: 36d3cfd3fa511254f884990452c53f10, type: 3}
+      objectReference: {fileID: 4569578761545205592, guid: 1606409553de9e943975983dacc399ec, type: 3}
     - target: {fileID: 7702355461012316239, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
       propertyPath: birdLift
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7702355461012316239, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
       propertyPath: birdDrag
@@ -526,6 +526,22 @@ PrefabInstance:
     - target: {fileID: 7702355461012316239, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
       propertyPath: _currentPlayerType
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7702355461012316239, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
+      propertyPath: gravity
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7702355461012316239, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
+      propertyPath: balloonDamp
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7702355461012316239, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
+      propertyPath: mass
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7702355461012316239, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
+      propertyPath: balloonMass
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29fd352eaefe01d4ba07415bab7af4c4, type: 3}
@@ -1537,6 +1553,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1197619495}
   m_CullTransparentMesh: 0
+--- !u!1 &1227149481
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1227149483}
+  - component: {fileID: 1227149482}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1227149482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1227149481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: cb78be67cfb3b5e49913067ffb82c4d8, type: 2}
+--- !u!4 &1227149483
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1227149481}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 42.34092, y: 24.735222, z: -391.6769}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1279758140
 GameObject:
   m_ObjectHideFlags: 0
@@ -2651,6 +2715,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2125673605}
   - component: {fileID: 2125673604}
+  - component: {fileID: 2125673606}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -2768,6 +2833,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2125673606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125673603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4b720c034a89f44868993dd8e74358, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2144346818
 GameObject:
   m_ObjectHideFlags: 0
@@ -2853,6 +2930,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -1403670361129683570, guid: f4bef07d4e878284c9d04f5e022c7b89, type: 3}
+      propertyPath: m_RendererIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: -1403670361129683570, guid: f4bef07d4e878284c9d04f5e022c7b89, type: 3}
+      propertyPath: m_RenderPostProcessing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -1403670361129683570, guid: f4bef07d4e878284c9d04f5e022c7b89, type: 3}
+      propertyPath: m_StopNaN
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2963039666264982048, guid: f4bef07d4e878284c9d04f5e022c7b89, type: 3}
+      propertyPath: m_ClearFlags
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2963039666264982050, guid: f4bef07d4e878284c9d04f5e022c7b89, type: 3}
       propertyPath: m_Name
       value: Main Camera

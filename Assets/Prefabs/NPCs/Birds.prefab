@@ -75,6 +75,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthDecrement: 0
-  speed: 0.5
+  speed: 10
   numberOfBirds: 3
-  _birdPrefab: {fileID: 6765090655988166357, guid: c1b43e4338b44024a8b987f32d701b6d, type: 3}
+  _birdPrefab: {fileID: 3326017653785741370, guid: 16ff5658a5425fd468c73f8b864960d6, type: 3}
