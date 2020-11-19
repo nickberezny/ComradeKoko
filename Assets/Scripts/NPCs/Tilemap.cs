@@ -5,6 +5,7 @@ using UnityEngine;
 public class Tilemap : MonoBehaviour
 {
     [SerializeField] float _bounciness = 200;
+    [SerializeField] AudioClip _clip;
 
     private Collider2D _collider;
     
@@ -17,10 +18,9 @@ public class Tilemap : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Collision w/ " + collision.gameObject.name);
         if (collision.gameObject.tag == "Player")
         {
-            collision.gameObject.GetComponent<PlayerMotor2>().HitPlayer(_bounciness*collision.contacts[0].normal.x, _bounciness*collision.contacts[0].normal.y);
+            AudioManager.Instance.PlaySFX(_clip);
         }
     }
 

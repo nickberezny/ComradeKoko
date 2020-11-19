@@ -32,14 +32,17 @@ public class PlayerManager : Singleton<PlayerManager>
     private PlayerHealth _playerHealth;
     private PhysicsParameters param;
 
+    private Animator _playerAnim;
    
 
     private void Start()
     {
+        
         DontDestroyOnLoad(gameObject);
+        
 
-        
-        
+
+
     }
 
     private void Update()
@@ -50,27 +53,31 @@ public class PlayerManager : Singleton<PlayerManager>
             _hud.UpdateAltimeter(_currentPlayer.gameObject.transform.position.y);
         }    
 
+
         if (_currentPlayerState == PlayerState.CONTROLLABLE)
         {
-            if(Input.GetKeyDown(KeyCode.LeftShift))
+            
+            if (Input.GetKeyDown(KeyCode.LeftShift))
             {
                 _playerMotor.Death();
+                _playerAnim.SetBool("IsMoving", false);
             }
             if(Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
             {
                 _playerMotor.applyHorizontal = 1;
-                
+                _playerAnim.SetBool("IsMoving", true);
                 //move right
             }
             else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
             {
                 _playerMotor.applyHorizontal = -1;
-                
+                _playerAnim.SetBool("IsMoving", true);
                 //move left
             }
             else
             {
                 _playerMotor.applyHorizontal = 0;
+                _playerAnim.SetBool("IsMoving", false);
             }
 
             switch(_currentPlayerType)
@@ -116,8 +123,9 @@ public class PlayerManager : Singleton<PlayerManager>
         _currentPlayer = Instantiate(_playerPrefab, spawnPoint);
         _playerMotor = _currentPlayer.GetComponent<PlayerMotor2>();
         _playerHealth = _currentPlayer.GetComponent<PlayerHealth>();
-        
-        Debug.Log(_currentPlayer.gameObject);
+        _playerAnim = _playerMotor.GetPlayerAnimator();
+
+        Debug.Log(_playerAnim);
 
         UpdateType(type);
 

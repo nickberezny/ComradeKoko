@@ -62,7 +62,10 @@ public class GameManager : Singleton<GameManager>
 
     void OnLoadLevelComplete(AsyncOperation ao)
     {
-        HUD.enabled = true;
+       
+        StartCoroutine(DelayedTransition(2));
+        Time.timeScale = 0;
+        _paused = true;
         AsyncUnloadLevel(_sceneToUnload);
         
 
@@ -103,6 +106,9 @@ public class GameManager : Singleton<GameManager>
     
     private void AsyncLoadLevel(int levelNum = -1, string levelName = "")
     {
+        HUD.enabled = false;
+        _uiManager.SetTransitionScreen(true);
+
         PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.UNACTIVE);
         AsyncOperation ao;
         if (!string.IsNullOrEmpty(levelName)) ao = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Additive);
@@ -141,6 +147,13 @@ public class GameManager : Singleton<GameManager>
         ao.completed += OnUnloadOperationComplete;
     }
 
-
+    IEnumerator DelayedTransition(float time)
+    {
+        yield return new WaitForSecondsRealtime(time);
+        _uiManager.SetTransitionScreen(false);
+        Time.timeScale = 1;
+        _paused = false;
+        HUD.enabled = true;
+    }    
 
 }

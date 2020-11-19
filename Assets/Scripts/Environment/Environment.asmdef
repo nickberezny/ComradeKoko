@@ -1,7 +1,8 @@
 {
     "name": "Environment",
     "references": [
-        "GUID:15fc0a57446b3144c949da3e2b9737a9"
+        "GUID:15fc0a57446b3144c949da3e2b9737a9",
+        "GUID:130ff03511fd67a41a5242fe1cba5a9b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

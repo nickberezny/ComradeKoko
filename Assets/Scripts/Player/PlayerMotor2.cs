@@ -9,26 +9,26 @@ public class PlayerMotor2 : MonoBehaviour
     [SerializeField] GameObject _balloonObject;
     [SerializeField] GameObject _webObject;
 
+    [SerializeField] AudioClip _popClip;
+
+    private Animator _balloonAnimator;
+
     private Collider2D _playerCollider;
     private Rigidbody2D _balloonRigibody;
+    private PlayerHealth _playerHealth;
 
     private Vector3 _playerPosition;
     private Vector3 _balloonPosition;
 
     public PhysicsParameters param;
 
-    private RaycastHit2D[] _hits = new RaycastHit2D[10];
 
     public float applyVertical = 0;
     public float applyHorizontal = 0;
 
     private float dt = 0;
-    private float _verticalVel = 0;
-    private float _horizontalVel = 0;
     private float _theta = 0, _dtheta = 0;
     private Vector2 _hitForce = new Vector2(0,0);
-   
-    private float tilemapCollisionMargin = 0.08f;
 
     private bool isDead = false;
 
@@ -40,8 +40,11 @@ public class PlayerMotor2 : MonoBehaviour
         _balloonPosition = _balloonObject.transform.position;
         _playerCollider = GetComponent<Collider2D>();
         _balloonRigibody = _balloonObject.GetComponent<Rigidbody2D>();
+        _playerHealth = _balloonObject.GetComponent<PlayerHealth>();
+        _balloonAnimator = GetComponent<Animator>();
 
-       
+
+
     }
 
     private void FixedUpdate()
@@ -49,12 +52,23 @@ public class PlayerMotor2 : MonoBehaviour
 
         if(!isDead)
         {
+            
+            if (applyHorizontal == 1)
+            {
+                _playerObject.transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+            else if (applyHorizontal == -1)
+            {
+                 _playerObject.transform.eulerAngles = new Vector3(0, 180, 0);
+            }
+            else
+            {
+                
+            }
 
-        
-            if(applyHorizontal == 1) _playerObject.transform.eulerAngles = new Vector3(0, 0, 0);
-            if (applyHorizontal == -1) _playerObject.transform.eulerAngles = new Vector3(0, 180, 0);
 
-       
+            if (applyVertical != 0) _playerHealth.changeHealth(-1);
+
 
             dt = Time.deltaTime;
             _balloonRigibody.AddForce(new Vector2(applyHorizontal*param.horizontalVel, -applyVertical*param.verticalForce));
@@ -66,16 +80,6 @@ public class PlayerMotor2 : MonoBehaviour
             _balloonObject.transform.position = RoundPosition(_balloonObject.transform.position);
             applyVertical = 0;
 
-            /*
-            if (isHit)
-            {
-                applyHorizontal = 0;
-                isHit = false;
-                _hitForce = new Vector2(0,0);
-                PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.CONTROLLABLE);
-
-            }
-            */
         }
 
 
@@ -99,25 +103,28 @@ public class PlayerMotor2 : MonoBehaviour
 
     public void HitPlayer(float forceX, float forceY)
     {
-        //isHit = true;
         _hitForce.x = forceX;
         _hitForce.y = forceY;
 
     }
 
+    public Animator GetPlayerAnimator()
+    {
+        return _playerObject.GetComponent<Animator>();
+    }
+
     public void Death()
     {
         //fall to spawn
+        _balloonAnimator.SetBool("Pop", true);
         PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.DEAD);
-        _balloonObject.GetComponent<SpriteRenderer>().enabled = false;
+        AudioManager.Instance.PlaySFX(_popClip);
+       // _balloonObject.GetComponent<SpriteRenderer>().enabled = false;
         _playerCollider.enabled = false;
         _balloonRigibody.Sleep();
         isDead = true;
         applyVertical = 0;
         applyHorizontal = 0;
-        _verticalVel = 0;
-        _horizontalVel = 0;
-
 
         StartCoroutine(FallDown(3));
         
@@ -126,16 +133,23 @@ public class PlayerMotor2 : MonoBehaviour
     IEnumerator FallDown(float speed)
     {
         float vel = 3;
-        while(_balloonObject.transform.position.y > _activeSpawn.transform.position.y)
+        _balloonAnimator.SetBool("Pop", true);
+        yield return new WaitForSecondsRealtime(0.15f);
+        _balloonObject.GetComponent<SpriteRenderer>().enabled = false;
+        _balloonAnimator.SetBool("Pop", false);
+
+        while (_balloonObject.transform.position.y > _activeSpawn.transform.position.y)
         {
             float dt = Time.deltaTime;
             vel += speed * dt;
             _balloonObject.transform.position += new Vector3(0, -vel * dt, 0);
+            
             yield return new WaitForFixedUpdate();
         }
 
         _balloonObject.transform.position = _activeSpawn.transform.position;
         _balloonObject.GetComponent<SpriteRenderer>().enabled = true;
+        
         _playerCollider.enabled = true;
         PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.CONTROLLABLE);
         _balloonRigibody.WakeUp();

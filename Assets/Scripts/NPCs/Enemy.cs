@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] int healthDecrement;
-
     private Collider2D _collider;
 
     protected virtual void Awake()
@@ -19,10 +17,9 @@ public class Enemy : MonoBehaviour
         Debug.Log("Collision w/ " + collision.gameObject.name);
         if (collision.gameObject.tag == "Player")
         {
-
             _collider.enabled = false;
             StartCoroutine(WaitToReactivateCollider(1));
-            collision.gameObject.GetComponent<PlayerHealth>().HitByEnemy(collision, -healthDecrement);
+            collision.gameObject.GetComponent<PlayerHealth>().HitByEnemy(collision);
         }
 
     }

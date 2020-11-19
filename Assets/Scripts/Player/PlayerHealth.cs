@@ -23,13 +23,14 @@ public class PlayerHealth : MonoBehaviour
     }
     public void changeHealth(int change)
     {
-        _health = Mathf.Clamp(_health + change, 0, _maxHealth*fps);
+        _health = Mathf.Clamp(_health + (change * fps), 0, _maxHealth*fps);
         _hud.ChangeHealthBar((float)_health / (float)(_maxHealth*fps));
-        Debug.Log(_health);
+
         if(_health == 0)
         {
             Death();
         }
+
     }
     
     public void SetHUD(HUD hud)
@@ -37,25 +38,14 @@ public class PlayerHealth : MonoBehaviour
         _hud = hud;
     }
 
-    public void HitByEnemy(Collision2D col, int healthDecrement)
+    public void HitByEnemy(Collision2D col)
     {
-        //decrease
-        
-        PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.HIT);
-
-        _playerMotor.HitPlayer(0, _bounciness);
-
         Death();
-        //changeHealth(healthDecrement);
-        
         Debug.Log("Hit by enemy");
     }
 
     private void Death()
     {
-        
-       
         _playerMotor.Death();
-        //respawn
     }
 }

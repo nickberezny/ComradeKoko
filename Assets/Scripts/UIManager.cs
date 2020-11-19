@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] Dropdown _levelDropDown;
     [SerializeField] Canvas _pauseMenu;
+    [SerializeField] Canvas _transitionScreen;
 
     public void RunGame(string mode)
     {
@@ -26,6 +27,11 @@ public class UIManager : MonoBehaviour
     public void togglePause()
     {
         _pauseMenu.enabled = !_pauseMenu.enabled;
+    }
+
+    public void SetTransitionScreen(bool set)
+    {
+        _transitionScreen.enabled = set;
     }
 }
 
