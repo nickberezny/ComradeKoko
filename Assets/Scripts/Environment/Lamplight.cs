@@ -23,7 +23,7 @@ public class Lamplight : MonoBehaviour
     IEnumerator Flicker(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        _light.intensity = Random.Range(0.7f, 1f);
+        _light.intensity = Random.Range(0.8f, 1f);
         StartCoroutine(Flicker(Random.Range(0.01f, 0.05f))); ;
         
     }

@@ -4,19 +4,41 @@ using UnityEngine;
 
 public class AudioManager : Singleton<AudioManager>
 {
-    AudioSource _musicSource;
-    AudioSource _sfxSource;
+    [SerializeField] AudioSource _musicSource;
+    [SerializeField]  AudioSource _sfxSource;
+
+    private AudioClip[] _clips;
+    private bool[] _loops;
 
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
-        _musicSource = GetComponent<AudioSource>();
-        _sfxSource = GetComponentInChildren<AudioSource>();
+    } 
+
+    public void PlayAudio(AudioClip[] clip, bool[] loop)
+    {
+        _clips = clip;
+        _loops = loop;
+        StartCoroutine(ManageMusic());
     }
 
-    public void PlayAudio(AudioClip clip)
+    IEnumerator ManageMusic()
+    {
+        for(int i = 0; i < _clips.Length; i++)
+        {
+            PlayClip(_clips[i], _loops[i]);
+            yield return new WaitForSecondsRealtime(5);
+            while (_musicSource.isPlaying)
+            {
+                yield return new WaitForSecondsRealtime(5);
+            }
+        }
+    }
+
+    private void PlayClip(AudioClip clip, bool loop)
     {
         _musicSource.clip = clip;
+        _musicSource.loop = loop;
         _musicSource.Play();
     }
 

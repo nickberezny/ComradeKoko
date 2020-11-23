@@ -1,6 +1,8 @@
 {
     "name": "Menu",
-    "references": [],
+    "references": [
+        "GUID:5041d5f1ee5334c4aba82934259246a8"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

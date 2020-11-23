@@ -24,10 +24,15 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private PlayerManager _playerManager;
     [SerializeField] private Canvas HUD;
     [SerializeField] private UIManager _uiManager;
+    [SerializeField] Transform _countdownProcessing;
+
 
     private GameObject _player;
     private string _currentLevelName;
     private string _sceneToUnload;
+
+    private int _transitionTime = 4;
+
 
     public GameState CurrentGameState
     {
@@ -62,8 +67,8 @@ public class GameManager : Singleton<GameManager>
 
     void OnLoadLevelComplete(AsyncOperation ao)
     {
-       
-        StartCoroutine(DelayedTransition(2));
+        _countdownProcessing.gameObject.SetActive(true);
+        StartCoroutine(DelayedTransition(_transitionTime));
         Time.timeScale = 0;
         _paused = true;
         AsyncUnloadLevel(_sceneToUnload);
@@ -76,11 +81,14 @@ public class GameManager : Singleton<GameManager>
     {
         Transform spawnPoint = GameObject.FindGameObjectWithTag("Spawn").transform;
 
-        PlayerType.type type = FindObjectOfType<LevelManager>()._playerType;
+        LevelManager lm = FindObjectOfType<LevelManager>();
+
+        PlayerType.type type = lm._playerType;
+        GameObject playerPrefab = lm._playerPrefab;
 
         if (spawnPoint)
         {
-            _player = _playerManager.CreatePlayer(spawnPoint.parent, type);
+            _player = _playerManager.CreatePlayer(spawnPoint.parent, type, playerPrefab);
             spawnPoint.position = spawnPoint.position + new Vector3(0, 0, -10);
             _cameraManager.CreateCamera(spawnPoint);
             _cameraManager.setPlayer(_player);
@@ -92,23 +100,36 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public void SetPlayer(GameObject _playerPrefab)
+    {
+        
+    }
+
     public void LoadNextLevel()
     {
-         AsyncLoadLevel(_currentLevelNum+1);
         _currentLevelNum += 1;
+        AsyncLoadLevel(_currentLevelNum);
+        
     }
 
     public void LoadLevel(int levelNum = -1, string levelName = "")
     {
-        if (!string.IsNullOrEmpty(levelName)) AsyncLoadLevel(-1,levelName);
-        else if(levelNum != -1) AsyncLoadLevel(levelNum, "");   
+        if (!string.IsNullOrEmpty(levelName)) AsyncLoadLevel(-1, levelName);
+        else if (levelNum != -1)
+        {
+            _currentLevelNum = levelNum;
+            AsyncLoadLevel(levelNum, "");
+            
+        }
     }
     
     private void AsyncLoadLevel(int levelNum = -1, string levelName = "")
     {
         HUD.enabled = false;
+        
+        TransitionScreen.Instance.SetTransitionScreen(_currentLevelNum-1, _transitionTime);
         _uiManager.SetTransitionScreen(true);
-
+        
         PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.UNACTIVE);
         AsyncOperation ao;
         if (!string.IsNullOrEmpty(levelName)) ao = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Additive);
@@ -151,9 +172,20 @@ public class GameManager : Singleton<GameManager>
     {
         yield return new WaitForSecondsRealtime(time);
         _uiManager.SetTransitionScreen(false);
+        //countdown
+        _uiManager._countdownTask = _uiManager.CountDownRoutine();
+        StartCoroutine(_uiManager._countdownTask);
+        yield return new WaitForEndOfFrame();
+
+        while (_uiManager._countdownTask != null)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
         Time.timeScale = 1;
         _paused = false;
         HUD.enabled = true;
+        _countdownProcessing.gameObject.SetActive(false);
     }    
 
 }

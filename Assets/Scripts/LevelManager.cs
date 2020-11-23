@@ -5,16 +5,21 @@ using UnityEngine;
 public class LevelManager : MonoBehaviour
 {
     public PlayerType.type _playerType;
+    public GameObject _playerPrefab;
 
-    [SerializeField] AudioClip _levelAudio;
+    [SerializeField] AudioClip[] _levelAudio;
+    [SerializeField] bool[] _loop;
+    [SerializeField] string[] _levelTitles;
+    
 
     private void Start()
     {
 
-        if(_levelAudio)
-        {
-            AudioManager.Instance.PlayAudio(_levelAudio);
-        }
+     AudioManager.Instance.PlayAudio(_levelAudio, _loop);
+     //GameManager.Instance.SetPlayer(_playerPrefab);
+        
     }
+
+
 
 }

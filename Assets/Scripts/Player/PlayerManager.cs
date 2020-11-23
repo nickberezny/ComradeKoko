@@ -17,7 +17,7 @@ public class PlayerManager : Singleton<PlayerManager>
     public PlayerState _currentPlayerState = PlayerState.UNACTIVE;
     public PlayerType.type _currentPlayerType = PlayerType.type.NULL;
 
-    [SerializeField] GameObject _playerPrefab;
+    //[SerializeField] GameObject _playerPrefab;
     
 
     [SerializeField] private float balloonLift = 15;
@@ -117,7 +117,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
 
 
-    public GameObject CreatePlayer(Transform spawnPoint, PlayerType.type type)
+    public GameObject CreatePlayer(Transform spawnPoint, PlayerType.type type, GameObject _playerPrefab)
     {
         //if(type == PlayerType.type.BALLOON) _currentPlayer = Instantiate(_balloonPrefab, spawnPoint);
         _currentPlayer = Instantiate(_playerPrefab, spawnPoint);

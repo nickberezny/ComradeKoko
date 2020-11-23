@@ -4,13 +4,23 @@ using UnityEngine;
 
 public class Finish : MonoBehaviour
 {
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Collision w/ " + collision.gameObject.name);
+        Debug.Log("Finish Collision w/ " + collision.gameObject.name);
         if (collision.gameObject.tag == "Player")
         {
+            CameraManager.Instance.SetFollow(false);
+            PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.UNACTIVE);
 
-            GameManager.Instance.LoadNextLevel();
+            StartCoroutine(WaitToLoad(3f));
         }
+    }
+
+    IEnumerator WaitToLoad(float time)
+    {
+        yield return new WaitForSecondsRealtime(time);
+        
+        GameManager.Instance.LoadNextLevel();
+        CameraManager.Instance.SetFollow(true);
     }
 }

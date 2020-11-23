@@ -15,6 +15,11 @@ public class Banana : MonoBehaviour
             collision.gameObject.GetComponent<PlayerHealth>().changeHealth(_healthIncrement);
             Destroy(this.gameObject);
         }
+        else if(collision.gameObject.tag == "Koko")
+        {
+            collision.gameObject.GetComponentInParent<PlayerHealth>().changeHealth(_healthIncrement);
+            Destroy(this.gameObject);
+        }
 
     }
 }

@@ -21,6 +21,7 @@ public class HUD : MonoBehaviour
         ChangeHealthBar(1);
     }
 
+
     public void UpdateAltimeter(float val)
     {
         _altimeter.text = (val/_altimeterScale).ToString("F1") + "m";
