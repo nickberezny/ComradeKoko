@@ -26,7 +26,15 @@ public class Elevator : MonoBehaviour
             }
         }
 
-        limits.Sort((a, b) => a.transform.position.y.CompareTo(b.transform.position.y));
+        if(_speed>0)
+        {
+            limits.Sort((a, b) => a.transform.position.y.CompareTo(b.transform.position.y));
+        }
+        else
+        {
+            limits.Sort((a, b) => b.transform.position.y.CompareTo(a.transform.position.y));
+        }
+        
 
         Debug.Log(limits[0].transform.position.y + "," + limits[1].transform.position.y);
 
@@ -50,7 +58,7 @@ public class Elevator : MonoBehaviour
             foreach (GameObject box in boxes.ToArray())
             {
                 box.transform.position += new Vector3(0, _speed * dt, 0);
-                if (box.transform.position.y > limits[1].transform.position.y)
+                if (_speed*box.transform.position.y > _speed*limits[1].transform.position.y)
                 {
                     boxes.Remove(box);
                     Destroy(box);
@@ -58,7 +66,7 @@ public class Elevator : MonoBehaviour
                 }
             }
 
-            if (_lastCreatedBox.transform.position.y - _gapOrder[gapIndex] > limits[0].transform.position.y)
+            if (_speed*_lastCreatedBox.transform.position.y - Mathf.Abs(_speed)*_gapOrder[gapIndex] > _speed*limits[0].transform.position.y)
             {
                 AddBox();
 

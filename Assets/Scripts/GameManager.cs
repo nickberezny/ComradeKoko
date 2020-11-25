@@ -16,17 +16,17 @@ public class GameManager : Singleton<GameManager>
 
     private int _currentLevelNum = 0;
     private bool _paused = false;
-    
+    public float dt { private set; get; }
 
     GameState _currentGameState = GameState.PREGAME;
 
     [SerializeField] private CameraManager _cameraManager;
     [SerializeField] private PlayerManager _playerManager;
-    [SerializeField] private Canvas HUD;
+    [SerializeField] private Canvas _hudCanvas;
     [SerializeField] private UIManager _uiManager;
     [SerializeField] Transform _countdownProcessing;
 
-
+    private HUD _hud;
     private GameObject _player;
     private string _currentLevelName;
     private string _sceneToUnload;
@@ -42,12 +42,20 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
+        _hud = _hudCanvas.GetComponent<HUD>();
+        dt = 0;
         _currentLevelName = SceneManager.GetActiveScene().name;
         DontDestroyOnLoad(gameObject);
     }
 
     private void Update()
     {
+        if(PlayerManager.Instance._currentPlayerState == PlayerManager.PlayerState.CONTROLLABLE)
+        {
+            dt += Time.deltaTime;
+            _hud.UpdateTimer(dt);
+        }
+
         if(Input.GetKeyDown(KeyCode.Escape) && PlayerManager.Instance._currentPlayerState == PlayerManager.PlayerState.CONTROLLABLE)
         {
            
@@ -67,11 +75,14 @@ public class GameManager : Singleton<GameManager>
 
     void OnLoadLevelComplete(AsyncOperation ao)
     {
+        
         _countdownProcessing.gameObject.SetActive(true);
         StartCoroutine(DelayedTransition(_transitionTime));
         Time.timeScale = 0;
         _paused = true;
         AsyncUnloadLevel(_sceneToUnload);
+        dt = 0;
+
         
 
 
@@ -125,7 +136,7 @@ public class GameManager : Singleton<GameManager>
     
     private void AsyncLoadLevel(int levelNum = -1, string levelName = "")
     {
-        HUD.enabled = false;
+        _hudCanvas.enabled = false;
         
         TransitionScreen.Instance.SetTransitionScreen(_currentLevelNum-1, _transitionTime);
         _uiManager.SetTransitionScreen(true);
@@ -184,7 +195,7 @@ public class GameManager : Singleton<GameManager>
 
         Time.timeScale = 1;
         _paused = false;
-        HUD.enabled = true;
+        _hudCanvas.enabled = true;
         _countdownProcessing.gameObject.SetActive(false);
     }    
 

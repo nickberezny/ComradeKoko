@@ -67,7 +67,7 @@ public class PlayerMotor2 : MonoBehaviour
             }
 
 
-            if (applyVertical != 0) _playerHealth.changeHealth(-1);
+            //if (applyVertical != 0) _playerHealth.changeHealth(-1);
 
 
             dt = Time.deltaTime;
@@ -163,8 +163,8 @@ public class PlayerMotor2 : MonoBehaviour
 
     private float RoundToNearestPixel(float unityUnits)
     {
-        float valueInPixels = Mathf.Round(unityUnits * 100);
-        return valueInPixels * (1 / 100f);
+        float valueInPixels = Mathf.Round(unityUnits * 128);
+        return valueInPixels * (1 / 128f);
     }
 
     private Vector3 RoundPosition(Vector3 pos)

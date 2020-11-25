@@ -27,7 +27,7 @@ public class TransitionScreen : Singleton<TransitionScreen>
         {
             title.gameObject.SetActive(false);
         }
-        Debug.Log("Transition" + index);
+        //Debug.Log("Transition" + index);
         _titleText[1].text = _titleStrings[index];
         _titleText[0].text = "Level " + (index + 1).ToString();
         _transitionImage.color = Color.black;
@@ -41,7 +41,7 @@ public class TransitionScreen : Singleton<TransitionScreen>
 
         while(dt < time)
         {
-            Debug.Log("Fade:" + dt);
+            //Debug.Log("Fade:" + dt);
             _transitionImage.color = Color.Lerp(Color.black, Color.white, dt / (float)time);
             dt += Time.unscaledDeltaTime;
             yield return new WaitForEndOfFrame();

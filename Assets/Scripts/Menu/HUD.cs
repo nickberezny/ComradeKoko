@@ -8,7 +8,9 @@ public class HUD : MonoBehaviour
 {
     [SerializeField] private Slider _slider;
     [SerializeField] Text _altimeter;
+    [SerializeField] Text _timer;
 
+    private float _time;
     private float _altimeterScale = 4;
 
     private void Awake()
@@ -21,6 +23,15 @@ public class HUD : MonoBehaviour
         ChangeHealthBar(1);
     }
 
+
+
+    public void UpdateTimer(float t)
+    {
+        int sec = (int)t % 60;
+        int min = (int)t / 60;
+
+        _timer.text = min.ToString("F0") + "m " + sec.ToString("D2") + "s";
+    }
 
     public void UpdateAltimeter(float val)
     {

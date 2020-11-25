@@ -14,6 +14,7 @@ public class Birds : Enemy
     private float dt = 0;
     private float distance = 0;
     private int dir = 0;
+    private Quaternion rot;
 
     protected override void Awake()
     {
@@ -27,8 +28,17 @@ public class Birds : Enemy
             }
         }
 
+        if (speed < 0)
+        {
+            rot.eulerAngles = _birdPrefab.transform.eulerAngles + new Vector3(0, -180, 0);
+        }
+        else
+        {
+            rot.eulerAngles = _birdPrefab.transform.eulerAngles + new Vector3(0, 0, 0);
+        }
+
         distance = Mathf.Abs(limits[0] - transform.position.x);
-        dir = (int) ((limits[0] - transform.position.x ) / distance);
+        dir = (int)((limits[0] - transform.position.x) / distance);
         _birds = new GameObject[numberOfBirds];
 
         Debug.Log("Dir:" + dir + ", Distance: " + distance);
@@ -37,10 +47,11 @@ public class Birds : Enemy
 
         for (int i = 1; i < numberOfBirds; i++)
         {
-            _birds[i] = Instantiate(_birdPrefab, transform.position + new Vector3((float)dir * (float)i * distance / (float)numberOfBirds, 0, 0), Quaternion.identity, transform);
+            _birds[i] = Instantiate(_birdPrefab, transform.position + new Vector3((float)dir * (float)i * distance / (float)numberOfBirds, 0, 0), rot, transform);
             Debug.Log("New Pos: " + transform.position + new Vector3((float)dir * (float)i * distance / (float)numberOfBirds, 0, 0));
         }
-        
+
+       
         
     }
 
@@ -75,7 +86,7 @@ public class Birds : Enemy
 
     private void CreateBird()
     {
-        _birds[0] = Instantiate(_birdPrefab, transform);
+        _birds[0] = Instantiate(_birdPrefab, transform.position, rot, transform);
     }
 
 
