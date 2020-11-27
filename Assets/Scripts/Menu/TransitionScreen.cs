@@ -28,10 +28,10 @@ public class TransitionScreen : Singleton<TransitionScreen>
             title.gameObject.SetActive(false);
         }
         //Debug.Log("Transition" + index);
-        _titleText[1].text = _titleStrings[index];
-        _titleText[0].text = "Level " + (index + 1).ToString();
+        _titleText[1].text = _titleStrings[index-1];
+        _titleText[0].text = "Level " + (index).ToString();
         _transitionImage.color = Color.black;
-        _transitionImage.sprite = _images[index];
+        _transitionImage.sprite = _images[index-1];
         StartCoroutine(FadeIn((float)time/3f));
     }
 

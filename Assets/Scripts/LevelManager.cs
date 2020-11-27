@@ -10,6 +10,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] AudioClip[] _levelAudio;
     [SerializeField] bool[] _loop;
     [SerializeField] string[] _levelTitles;
+
     
 
     private void Start()

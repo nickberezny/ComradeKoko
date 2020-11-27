@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Video;
+
 
 public class GameManager : Singleton<GameManager>
 {
@@ -12,9 +14,10 @@ public class GameManager : Singleton<GameManager>
         PAUSED
     }
 
-    public bool _storyMode = false;
 
-    private int _currentLevelNum = 0;
+    public bool _storyMode = false;
+    private bool _videoIntro = true;
+    private int _currentLevelNum = 1;
     private bool _paused = false;
     public float dt { private set; get; }
 
@@ -25,6 +28,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private Canvas _hudCanvas;
     [SerializeField] private UIManager _uiManager;
     [SerializeField] Transform _countdownProcessing;
+    [SerializeField] VideoPlayer _videoPlayer;
 
     private HUD _hud;
     private GameObject _player;
@@ -33,6 +37,7 @@ public class GameManager : Singleton<GameManager>
 
     private int _transitionTime = 4;
 
+    private float[] altitudeOffsets = { 0, 4000, 380000000 };
 
     public GameState CurrentGameState
     {
@@ -44,12 +49,31 @@ public class GameManager : Singleton<GameManager>
     {
         _hud = _hudCanvas.GetComponent<HUD>();
         dt = 0;
-        _currentLevelName = SceneManager.GetActiveScene().name;
+        _currentLevelName = "MainMenu";
         DontDestroyOnLoad(gameObject);
+
+        _videoPlayer.url = System.IO.Path.Combine(Application.streamingAssetsPath, "testvid.mp4");
+        Debug.Log(_videoPlayer.url);
+        _videoPlayer.Play();
+    }
+    void OnInitialLoad(AsyncOperation ao)
+    {
+        SceneManager.UnloadSceneAsync(0);
     }
 
     private void Update()
     {
+        if(_videoIntro)
+        {
+            if(!_videoPlayer.isPlaying)
+            {
+                _videoIntro = false;
+                _uiManager.setMain(true);
+                AsyncOperation ao = SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
+                ao.completed += OnInitialLoad;
+            }
+        }
+
         if(PlayerManager.Instance._currentPlayerState == PlayerManager.PlayerState.CONTROLLABLE)
         {
             dt += Time.deltaTime;
@@ -80,13 +104,10 @@ public class GameManager : Singleton<GameManager>
         StartCoroutine(DelayedTransition(_transitionTime));
         Time.timeScale = 0;
         _paused = true;
-        AsyncUnloadLevel(_sceneToUnload);
+         AsyncUnloadLevel(_sceneToUnload);
         dt = 0;
-
-        
-
-
     }
+
 
     void OnUnloadOperationComplete (AsyncOperation ao)
     {
@@ -123,6 +144,27 @@ public class GameManager : Singleton<GameManager>
         
     }
 
+    public void LoadMainMenu()
+    {
+        PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.UNACTIVE);
+        _uiManager.setMain(true);
+        _uiManager.setPause(false);
+        Time.timeScale = 0;
+        _paused = true;
+        _hudCanvas.enabled = false;
+
+        AsyncOperation ao = SceneManager.LoadSceneAsync(1);
+        ao.completed += OnMainMenuLoad;
+        _currentLevelNum = 1;
+        _currentLevelName = "MainMenu";
+    }
+
+    void OnMainMenuLoad(AsyncOperation ao)
+    {
+        SceneManager.UnloadSceneAsync(_currentLevelNum);
+        _currentLevelNum = 1;
+    }
+
     public void LoadLevel(int levelNum = -1, string levelName = "")
     {
         if (!string.IsNullOrEmpty(levelName)) AsyncLoadLevel(-1, levelName);
@@ -137,7 +179,7 @@ public class GameManager : Singleton<GameManager>
     private void AsyncLoadLevel(int levelNum = -1, string levelName = "")
     {
         _hudCanvas.enabled = false;
-        
+        _hud.SetAltimeterOffset(altitudeOffsets[levelNum-2]);
         TransitionScreen.Instance.SetTransitionScreen(_currentLevelNum-1, _transitionTime);
         _uiManager.SetTransitionScreen(true);
         
@@ -198,5 +240,10 @@ public class GameManager : Singleton<GameManager>
         _hudCanvas.enabled = true;
         _countdownProcessing.gameObject.SetActive(false);
     }    
+
+    public void SkipVideo()
+    {
+        _videoPlayer.Stop();
+    }
 
 }

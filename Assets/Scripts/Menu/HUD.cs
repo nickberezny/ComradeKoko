@@ -12,6 +12,7 @@ public class HUD : MonoBehaviour
 
     private float _time;
     private float _altimeterScale = 4;
+    private float _altimeterOffset = 0;
 
     private void Awake()
     {
@@ -23,7 +24,10 @@ public class HUD : MonoBehaviour
         ChangeHealthBar(1);
     }
 
-
+    public void SetAltimeterOffset(float offset)
+    {
+        _altimeterOffset = offset;
+    }
 
     public void UpdateTimer(float t)
     {
@@ -35,7 +39,8 @@ public class HUD : MonoBehaviour
 
     public void UpdateAltimeter(float val)
     {
-        _altimeter.text = (val/_altimeterScale).ToString("F1") + "m";
+     
+        _altimeter.text = ((double)_altimeterOffset + (double)(val / _altimeterScale)).ToString("F1") + "m";
     }
 
     public void ChangeHealthBar(float val)

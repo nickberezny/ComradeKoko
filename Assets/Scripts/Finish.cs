@@ -16,6 +16,7 @@ public class Finish : MonoBehaviour
         Debug.Log("Finish Collision w/ " + collision.gameObject.name);
         if (collision.gameObject.tag == "Player")
         {
+            GetComponent<Collider2D>().enabled = false;
             CameraManager.Instance.SetFollow(false);
             PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.UNACTIVE);
             

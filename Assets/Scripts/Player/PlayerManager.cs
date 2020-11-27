@@ -172,7 +172,7 @@ public class PlayerManager : Singleton<PlayerManager>
         }
 
         _playerMotor.param = param;
-        _currentPlayerState = PlayerState.CONTROLLABLE;
+        //_currentPlayerState = PlayerState.CONTROLLABLE;
     }
 
     

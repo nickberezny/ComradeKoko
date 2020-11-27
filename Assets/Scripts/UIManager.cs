@@ -11,15 +11,22 @@ public class UIManager : MonoBehaviour
     [SerializeField] Canvas _pauseMenu;
     [SerializeField] Canvas _transitionScreen;
     [SerializeField] Canvas _countdownScreen;
-    
+    [SerializeField] Canvas _mainMenu;
+    [SerializeField] Camera _mainMenuCamera;
 
     public IEnumerator _countdownTask;
 
     private int _levelNum = 0;
 
+    private void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }
 
     public void RunGame(string mode)
     {
+        setMain(false);
+
         if(mode == "Story")
         {
             GameManager.Instance._storyMode = true;
@@ -28,7 +35,7 @@ public class UIManager : MonoBehaviour
         else if(mode == "Level")
         {
 
-            GameManager.Instance.LoadLevel(_levelDropDown.value + 1);
+            GameManager.Instance.LoadLevel(_levelDropDown.value + 2);
             
         }
 
@@ -53,6 +60,7 @@ public class UIManager : MonoBehaviour
         _countdownScreen.enabled = false;
         
         _countdownTask = null;
+        PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.CONTROLLABLE);
     }
 
 
@@ -61,10 +69,21 @@ public class UIManager : MonoBehaviour
         _pauseMenu.enabled = !_pauseMenu.enabled;
     }
 
+    public void setPause(bool val)
+    {
+        _pauseMenu.enabled = val;
+    }
+
     public void SetTransitionScreen(bool set)
     {
         
         _transitionScreen.enabled = set;
+    }
+
+    public void setMain(bool val)
+    {
+        //_mainMenuCamera.gameObject.SetActive(val);
+        _mainMenu.enabled = val;
     }
 }
 
