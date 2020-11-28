@@ -9,6 +9,7 @@ public class Finish : MonoBehaviour
     private void Start()
     {
         Leaderboard.Instance.GetLeaderboard(level);
+        Leaderboard.Instance.SetTitle(level);
     }
 
     void OnTriggerEnter2D(Collider2D collision)

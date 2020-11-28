@@ -9,6 +9,7 @@ TagManager:
   - LevelManager
   - tilemap
   - Koko
+  - EndPoint
   layers:
   - Default
   - TransparentFX

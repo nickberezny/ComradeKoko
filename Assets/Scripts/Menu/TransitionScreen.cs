@@ -29,7 +29,7 @@ public class TransitionScreen : Singleton<TransitionScreen>
         }
         //Debug.Log("Transition" + index);
         _titleText[1].text = _titleStrings[index-1];
-        _titleText[0].text = "Level " + (index).ToString();
+        _titleText[0].text = "LEVEL " + (index).ToString();
         _transitionImage.color = Color.black;
         _transitionImage.sprite = _images[index-1];
         StartCoroutine(FadeIn((float)time/3f));

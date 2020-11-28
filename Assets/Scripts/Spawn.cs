@@ -10,7 +10,8 @@ public class Spawn : MonoBehaviour
 
         if (collision.gameObject.tag == "Player")
         {
-            collision.gameObject.GetComponent<PlayerMotor2>().SetNewSpawn(this.gameObject);
+            collision.gameObject.TryGetComponent<PlayerMotor2>(out PlayerMotor2 motor);
+            motor.SetNewSpawn(this.gameObject); 
         }
 
     }

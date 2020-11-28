@@ -55,9 +55,11 @@ public class GameManager : Singleton<GameManager>
         _videoPlayer.url = System.IO.Path.Combine(Application.streamingAssetsPath, "testvid.mp4");
         Debug.Log(_videoPlayer.url);
         _videoPlayer.Play();
+        _uiManager.setPause(false);
     }
     void OnInitialLoad(AsyncOperation ao)
     {
+        _uiManager.setMain(true);
         SceneManager.UnloadSceneAsync(0);
     }
 
@@ -68,7 +70,7 @@ public class GameManager : Singleton<GameManager>
             if(!_videoPlayer.isPlaying)
             {
                 _videoIntro = false;
-                _uiManager.setMain(true);
+                
                 AsyncOperation ao = SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
                 ao.completed += OnInitialLoad;
             }
@@ -104,6 +106,7 @@ public class GameManager : Singleton<GameManager>
         StartCoroutine(DelayedTransition(_transitionTime));
         Time.timeScale = 0;
         _paused = true;
+        Leaderboard.Instance.setLeaderboardCanvas(false);
          AsyncUnloadLevel(_sceneToUnload);
         dt = 0;
     }
@@ -141,16 +144,23 @@ public class GameManager : Singleton<GameManager>
     {
         _currentLevelNum += 1;
         AsyncLoadLevel(_currentLevelNum);
-        
+        CameraManager.Instance.SetFollow(true);
+        Leaderboard.Instance.setLeaderboardCanvas(false);
+    }
+
+    public void ClickDebug()
+    {
+        Debug.Log("Main menu button clicked");
     }
 
     public void LoadMainMenu()
     {
+        Debug.Log("Loading main menu...");
         PlayerManager.Instance.ChangeState(PlayerManager.PlayerState.UNACTIVE);
         _uiManager.setMain(true);
         _uiManager.setPause(false);
-        Time.timeScale = 0;
-        _paused = true;
+        Time.timeScale = 1;
+        //_paused = true;
         _hudCanvas.enabled = false;
 
         AsyncOperation ao = SceneManager.LoadSceneAsync(1);

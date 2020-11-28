@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] Canvas _countdownScreen;
     [SerializeField] Canvas _mainMenu;
     [SerializeField] Camera _mainMenuCamera;
+    [SerializeField] Canvas _controlsCanvas;
 
     public IEnumerator _countdownTask;
 
@@ -66,12 +67,19 @@ public class UIManager : MonoBehaviour
 
     public void togglePause()
     {
+        //if(_pauseMenu)
+        
         _pauseMenu.enabled = !_pauseMenu.enabled;
+        _pauseMenu.gameObject.SetActive(_pauseMenu.enabled);
+        
+        
     }
 
     public void setPause(bool val)
     {
+        _pauseMenu.gameObject.SetActive(val);
         _pauseMenu.enabled = val;
+        
     }
 
     public void SetTransitionScreen(bool set)
@@ -83,7 +91,14 @@ public class UIManager : MonoBehaviour
     public void setMain(bool val)
     {
         //_mainMenuCamera.gameObject.SetActive(val);
+        _mainMenu.gameObject.SetActive(val);
         _mainMenu.enabled = val;
+        //_mainMenu.gameObject.SetActive(val);
+    }
+
+    public void setControls(bool val)
+    {
+        _controlsCanvas.enabled = val;
     }
 }
 
